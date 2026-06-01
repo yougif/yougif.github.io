@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /
+Sitemap: https://yougif.pages.dev/sitemap.xml
