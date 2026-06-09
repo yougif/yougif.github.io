@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex">
+  <title>404 Not Found</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0d0d0f;--surface:#16161a;--surface2:#1e1e24;
+      --border:#2a2a35;--accent:#e03c3c;--accent2:#ff6b6b;
+      --warn:#f59e0b;--ok:#22c55e;--text:#e8e8f0;--muted:#6b6b80;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+
+    /* 잠금 화면 */
+    #lock{display:flex;align-items:center;justify-content:center;min-height:100vh}
+    #lock-inner{text-align:center;color:var(--muted);font-size:.9rem}
+
+    /* 실제 내용 */
+    #app{display:none}
+    header{background:linear-gradient(135deg,#1a0a0a 0%,#0d0d0f 60%);border-bottom:1px solid var(--accent);padding:24px 40px;display:flex;align-items:center;gap:16px}
+    .skull{font-size:2rem}
+    header h1{font-size:1.4rem;font-weight:700;color:var(--accent2);letter-spacing:-.03em}
+    header p{font-size:.82rem;color:var(--muted);margin-top:2px}
+    .container{max-width:960px;margin:0 auto;padding:32px 24px}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+    .stat-card .num{font-size:2rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+    .stat-card .num.red{color:var(--accent2)}.stat-card .num.warn{color:var(--warn)}.stat-card .num.ok{color:var(--ok)}
+    .stat-card .label{font-size:.75rem;color:var(--muted);margin-top:4px}
+    .section-title{font-size:.75rem;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+    .timeline{display:flex;flex-direction:column;gap:10px}
+    .crash-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:16px 20px;cursor:pointer;transition:border-color .15s,background .15s}
+    .crash-card:hover{background:var(--surface2);border-color:var(--accent2)}
+    .crash-card .card-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .crash-date{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:600;color:var(--text)}
+    .crash-code{background:rgba(224,60,60,.15);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:.75rem;padding:2px 8px;border-radius:4px;border:1px solid rgba(224,60,60,.3)}
+    .crash-count{margin-left:auto;font-size:.8rem;color:var(--muted)}
+    .crash-count span{color:var(--warn);font-weight:600}
+    .crash-reason{margin-top:10px;font-size:.85rem;color:var(--muted);line-height:1.5}
+    .crash-reason strong{color:var(--text)}
+    .crash-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+    .crash-detail.open{display:block}
+    .params{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);background:var(--bg);padding:8px 12px;border-radius:6px;margin-bottom:6px;word-break:break-all}
+    .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:60px auto}
+    .no-data{text-align:center;padding:60px 20px;color:var(--muted)}
+    .no-data .icon{font-size:3rem;margin-bottom:12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    footer{text-align:center;padding:24px;color:var(--muted);font-size:.75rem;border-top:1px solid var(--border);margin-top:40px}
+  </style>
+</head>
+<body>
+
+<!-- 잠금: 토큰 없으면 이것만 보임 -->
+<div id="lock"><div id="lock-inner">404</div></div>
+
+<!-- 실제 대시보드 -->
+<div id="app">
+<header>
+  <span class="skull">💀</span>
+  <div>
+    <h1>yougif PC 크래시 로그</h1>
+    <p>BSOD 자동 감지 · 날짜별 원인 기록 · 비공개</p>
+  </div>
+</header>
+<div class="container">
+  <div class="stats">
+    <div class="stat-card"><div class="num red" id="s-total">-</div><div class="label">총 크래시</div></div>
+    <div class="stat-card"><div class="num warn" id="s-week">-</div><div class="label">최근 7일</div></div>
+    <div class="stat-card"><div class="num ok" id="s-last">-</div><div class="label">마지막 크래시</div></div>
+    <div class="stat-card"><div class="num" id="s-code" style="font-size:1rem;color:var(--accent2)">-</div><div class="label">주요 오류 코드</div></div>
+  </div>
+  <p class="section-title">크래시 히스토리</p>
+  <div id="timeline"><div class="spinner"></div></div>
+</div>
+<footer>yougif private · BSOD 자동 로그 시스템</footer>
+</div>
+
+<script>
+// ★ 비밀 토큰 — URL 해시로 접근: yougif.github.io/bsod/#yougif-bsod-private
+const SECRET = 'yougif-bsod-private';
+
+const REPO = 'yougif/yougif.github.io';
+const RAW  = `https://raw.githubusercontent.com/${REPO}/master/bsod/logs`;
+const API  = `https://api.github.com/repos/${REPO}/contents/bsod/logs`;
+
+const REASON_MAP = {
+  '0x0000001a':'MEMORY_MANAGEMENT — RAM 물리 불량 의심 (MemTest86 권장)',
+  '0x0000003b':'SYSTEM_SERVICE_EXCEPTION — 드라이버 충돌',
+  '0x00000050':'PAGE_FAULT_IN_NONPAGED_AREA — RAM/드라이버 불량',
+  '0x0000007e':'SYSTEM_THREAD_EXCEPTION — 드라이버 문제',
+  '0x000000ef':'CRITICAL_PROCESS_DIED — 시스템 프로세스 강제종료',
+  '0x00000116':'VIDEO_TDR_FAILURE — GPU 드라이버 충돌',
+};
+
+function checkAuth() {
+  const hash = location.hash.replace('#','');
+  if (hash === SECRET) {
+    document.getElementById('lock').style.display = 'none';
+    document.getElementById('app').style.display  = 'block';
+    return true;
+  }
+  return false;
+}
+
+async function load() {
+  const tl = document.getElementById('timeline');
+  try {
+    const res   = await fetch(API);
+    const files = await res.json();
+    if (!Array.isArray(files) || files.length === 0) throw new Error('empty');
+    const jsonFiles = files.filter(f=>f.name.endsWith('.json')).sort((a,b)=>b.name.localeCompare(a.name));
+    const logs = await Promise.all(jsonFiles.map(f=>fetch(`${RAW}/${f.name}`).then(r=>r.json()).catch(()=>null)));
+    const valid = logs.filter(Boolean);
+    const all   = valid.flatMap(l=>l.entries||[]);
+    const week  = all.filter(e=>(Date.now()-new Date(e.timestamp))<7*86400000);
+    const last  = all[0];
+    const days  = last ? Math.floor((Date.now()-new Date(last.timestamp))/86400000) : null;
+    const cc    = {};
+    all.forEach(e=>{cc[e.code]=(cc[e.code]||0)+1});
+    const top   = Object.entries(cc).sort((a,b)=>b[1]-a[1])[0];
+
+    document.getElementById('s-total').textContent = all.length;
+    document.getElementById('s-week').textContent  = week.length;
+    document.getElementById('s-last').textContent  = days===null?'-':days===0?'오늘':`${days}일 전`;
+    document.getElementById('s-code').textContent  = top?top[0]:'-';
+
+    if (!valid.length){tl.innerHTML=noData();return}
+    tl.innerHTML = valid.map((log,i)=>{
+      const date  = jsonFiles[i].name.replace('.json','');
+      const cnt   = (log.entries||[]).length;
+      const first = (log.entries||[])[0];
+      const code  = first?.code||'-';
+      const reason= REASON_MAP[code.toLowerCase()]||'알 수 없는 오류';
+      const rows  = (log.entries||[]).map(e=>`
+        <div class="params">
+          🕐 ${e.timestamp} | ${e.code}<br>
+          &nbsp;&nbsp;파라미터: ${e.params||'-'}<br>
+          &nbsp;&nbsp;원인: ${REASON_MAP[e.code?.toLowerCase()]||'알 수 없음'}
+        </div>`).join('');
+      return `
+      <div class="crash-card" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="crash-date">📅 ${date}</span>
+          <span class="crash-code">${code}</span>
+          <span class="crash-count">이 날 <span>${cnt}회</span> 크래시</span>
+        </div>
+        <div class="crash-reason"><strong>${reason}</strong></div>
+        <div class="crash-detail">${rows||'<div class="params">상세 데이터 없음</div>'}</div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    tl.innerHTML=noData();
+  }
+}
+
+function noData(){return`<div class="no-data"><div class="icon">✅</div><p>기록된 크래시가 없습니다.</p><p style="font-size:.8rem;margin-top:8px">BSOD 발생 시 자동 업로드됩니다.</p></div>`}
+function toggle(el){el.querySelector('.crash-detail').classList.toggle('open')}
+
+if(checkAuth()) load();
+// 해시 변경 감지 (북마크 없이 직접 타이핑하는 경우)
+window.addEventListener('hashchange',()=>{if(checkAuth())load()});
+</script>
+</body>
+</html>
