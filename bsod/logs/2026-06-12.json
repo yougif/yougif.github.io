@@ -2,9 +2,9 @@
     "date":  "2026-06-12",
     "entries":  [
                     {
-                        "timestamp":  "2026-06-12 20:41:10",
+                        "timestamp":  "2026-06-12 21:39:35",
                         "code":  "0x0000001a",
-                        "params":  "0x0000000000061941, 0xffffa552a954af80, 0x0000000000000009, 0xffffd08001ef8d20",
+                        "params":  "0x0000000000061941, 0xffffad56ab55af80, 0x0000000000000009, 0xffffd381efb6cd20",
                         "reason":  "MEMORY_MANAGEMENT — RAM 물리 불량 의심"
                     }
                 ]
