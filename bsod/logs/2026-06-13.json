@@ -1,0 +1,11 @@
+{
+    "date":  "2026-06-13",
+    "entries":  [
+                    {
+                        "timestamp":  "2026-06-13 21:50:15",
+                        "code":  "0x0000001a",
+                        "params":  "0x0000000000061941, 0xfffffc7e3f1f8f80, 0x0000000000000009, 0xffffae006bafbd10",
+                        "reason":  "MEMORY_MANAGEMENT — RAM 물리 불량 의심"
+                    }
+                ]
+}
